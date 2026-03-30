@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogicFlow AI - Real Estate Command Center</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#0B0F19', // Deep Grey
+                        surface: '#131B2B',
+                        surfaceLight: '#1C263A',
+                        primary: '#3b82f6', // Electric Blue
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <style>
+        body {
+            background-color: #0B0F19;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Inline SVGs instead of external library to avoid React render conflicts in standalone mode
+        const Icons = {
+            users: <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>,
+            bot: <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8V4H8"></path><rect width="16" height="12" x="4" y="8" rx="2"></rect><path d="M2 14h2"></path><path d="M20 14h2"></path><path d="M15 13v2"></path><path d="M9 13v2"></path></svg>,
+            dollarSign: <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="2" y2="22"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>,
+            list: <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" x2="21" y1="6" y2="6"></line><line x1="8" x2="21" y1="12" y2="12"></line><line x1="8" x2="21" y1="18" y2="18"></line><line x1="3" x2="3.01" y1="6" y2="6"></line><line x1="3" x2="3.01" y1="12" y2="12"></line><line x1="3" x2="3.01" y1="18" y2="18"></line></svg>,
+            messageSquare: <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>,
+            send: <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+        };
+
+        const Dashboard = () => {
+            return (
+                <div className="min-h-screen p-4 md:p-8 flex flex-col gap-6 max-w-7xl mx-auto">
+                    {/* Header */}
+                    <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-800 pb-6 gap-4">
+                        <div>
+                            <h1 className="text-3xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600 tracking-tight">
+                                LogicFlow AI
+                            </h1>
+                            <p className="text-gray-400 mt-1.5 font-medium">Real Estate Command Center</p>
+                        </div>
+                        <div className="flex items-center gap-3 bg-surfaceLight px-4 py-2.5 rounded-full border border-gray-700/50 shadow-lg shadow-blue-900/10">
+                            <span className="relative flex h-2.5 w-2.5">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
+                            </span>
+                            <span className="text-sm font-semibold text-blue-400 tracking-wide">AI Agents Online</span>
+                        </div>
+                    </header>
+
+                    {/* Stats Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                        <StatCard title="Active Leads" value="124" trend="+12% this week" icon="users" />
+                        <StatCard title="AI Qualified" value="89" trend="71.7% qualification rate" icon="bot" />
+                        <StatCard title="Potential ROI" value="$2.4M" trend="Based on avg commission" icon="dollarSign" />
+                    </div>
+
+                    {/* Main Content Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-2">
+                        
+                        {/* Lead Feed */}
+                        <div className="lg:col-span-2 bg-surface rounded-2xl border border-gray-800 overflow-hidden flex flex-col shadow-xl">
+                            <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-surface/50">
+                                <h2 className="text-lg font-semibold flex items-center gap-2.5">
+                                    <div className="w-5 h-5 text-blue-400">{Icons.list}</div>
+                                    Recent Lead Feed
+                                </h2>
+                                <button className="text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors">View All</button>
+                            </div>
+                            <div className="flex-1 p-0">
+                                <ul className="divide-y divide-gray-800/60">
+                                    <LeadItem name="Sarah Jenkins" intent="Looking for 3BR downtown" time="10 mins ago" status="Hot" />
+                                    <LeadItem name="Michael Chen" intent="Investment property < $500k" time="45 mins ago" status="Warm" />
+                                    <LeadItem name="Emma Watson" intent="Relocating, needs family home" time="2 hours ago" status="Hot" />
+                                    <LeadItem name="David Rodriguez" intent="First-time buyer consulting" time="3 hours ago" status="Warm" />
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* AI Chat Simulator */}
+                        <div className="bg-surface rounded-2xl border border-gray-800 flex flex-col h-[500px] lg:h-auto shadow-xl">
+                            <div className="p-5 border-b border-gray-800 flex justify-between items-center bg-surface/50">
+                                <h2 className="text-lg font-semibold flex items-center gap-2.5">
+                                    <div className="w-5 h-5 text-blue-400">{Icons.messageSquare}</div>
+                                    AI Conversation
+                                </h2>
+                                <span className="bg-green-500/10 text-green-400 text-xs px-2.5 py-1 rounded-full border border-green-500/20 font-medium">Listening</span>
+                            </div>
+                            
+                            <div className="flex-1 p-5 overflow-y-auto scrollbar-hide flex flex-col gap-5">
+                                <ChatMessage role="customer" text="Hi, I'm looking for a house in the Northside school district." time="10:02 AM" />
+                                <ChatMessage role="ai" text="Hello! I'd be happy to help you find a home in the Northside district. What's your ideal budget and how many bedrooms do you need?" time="10:02 AM" />
+                                <ChatMessage role="customer" text="Around $400k, 3 or 4 bedrooms." time="10:04 AM" />
+                                <ChatMessage role="ai" text="Perfect. We currently have 5 off-market properties matching that description. Would you like me to schedule a call with one of our senior agents to discuss them?" time="10:04 AM" />
+                            </div>
+                            
+                            <div className="p-4 border-t border-gray-800 bg-surfaceLight/30">
+                                <div className="relative flex items-center">
+                                    <input type="text" placeholder="AI is typing..." disabled className="w-full bg-surfaceLight border border-gray-700/80 rounded-xl py-3.5 pl-4 pr-12 text-sm text-gray-300 focus:outline-none focus:border-blue-500/50 transition-colors" />
+                                    <button className="absolute right-2 bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-lg transition-colors shadow-md shadow-blue-900/20">
+                                        <div className="w-4 h-4">{Icons.send}</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const StatCard = ({ title, value, trend, icon }) => (
+            <div className="bg-surface p-6 rounded-2xl border border-gray-800/80 hover:border-gray-700 transition-colors relative overflow-hidden group shadow-lg">
+                <div className="absolute -right-8 -top-8 bg-blue-500/10 w-32 h-32 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all duration-500"></div>
+                <div className="flex justify-between items-start mb-6">
+                    <h3 className="text-gray-400 text-sm font-semibold tracking-wide uppercase">{title}</h3>
+                    <div className="p-2.5 bg-surfaceLight rounded-xl border border-gray-700/50 text-primary shadow-sm">
+                        <div className="w-5 h-5">{Icons[icon]}</div>
+                    </div>
+                </div>
+                <div>
+                    <div className="text-3xl font-bold text-white mb-1.5 tracking-tight">{value}</div>
+                    <div className="text-sm font-medium text-gray-500">{trend}</div>
+                </div>
+            </div>
+        );
+
+        const LeadItem = ({ name, intent, time, status }) => (
+            <li className="p-5 hover:bg-surfaceLight/40 transition-colors cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-gray-700 to-gray-800 border border-gray-600/50 flex items-center justify-center text-sm font-bold text-white shadow-inner shrink-0">
+                        {name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div>
+                        <h4 className="text-base font-semibold text-gray-100 mb-0.5">{name}</h4>
+                        <p className="text-sm text-gray-400 truncate max-w-[220px] md:max-w-md">{intent}</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-4 mt-3 sm:mt-0 ml-15 sm:ml-0">
+                    <span className="text-sm font-medium text-gray-500 whitespace-nowrap">{time}</span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold border tracking-wide uppercase ${
+                        status === 'Hot' 
+                            ? 'bg-red-500/10 text-red-500 border-red-500/20' 
+                            : 'bg-orange-500/10 text-orange-400 border-orange-500/20'
+                    }`}>
+                        {status}
+                    </span>
+                </div>
+            </li>
+        );
+
+        const ChatMessage = ({ role, text, time }) => {
+            const isAI = role === 'ai';
+            return (
+                <div className={`flex w-full ${isAI ? 'justify-start' : 'justify-end'}`}>
+                    <div className={`flex flex-col max-w-[85%] ${isAI ? 'items-start' : 'items-end'}`}>
+                        <div className="flex items-center gap-2 mb-1.5 px-1">
+                            {isAI && <div className="w-3.5 h-3.5 text-blue-400">{Icons.bot}</div>}
+                            <span className="text-xs font-semibold text-gray-400 tracking-wide uppercase">{isAI ? 'AI Bot' : 'Customer'}</span>
+                            <span className="text-[10px] text-gray-600 font-medium">{time}</span>
+                        </div>
+                        <div className={`p-3.5 rounded-2xl text-[15px] leading-relaxed shadow-sm ${
+                            isAI 
+                                ? 'bg-surfaceLight text-gray-200 border border-gray-700/50 rounded-tl-sm' 
+                                : 'bg-blue-600 text-white rounded-tr-sm shadow-blue-900/20'
+                        }`}>
+                            {text}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Dashboard />);
+    </script>
+</body>
+</html>

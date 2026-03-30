@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogicFlow AI | Enterprise AI for Real Estate</title>
+    <meta name="description" content="We build custom AI Agents for Real Estate Developers that automate WhatsApp, filter serious buyers from time-passers, and book site visits on autopilot.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS (CDN for Single File) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            400: '#60a5fa',
+                            500: '#3b82f6', // Electric Blue Accent
+                            600: '#2563eb',
+                            900: '#020617', // Deep Midnight Blue Background
+                            white: '#F8FAFC', // Pure White
+                            gold: '#fbbf24', // For success modal
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'], // Body
+                        display: ['Space Grotesk', 'sans-serif'], // Headlines
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'pulse-glow-gold': 'pulseGlowGold 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'draw-check': 'drawCheck 0.6s ease-out forwards 0.2s',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1', boxShadow: '0 0 15px 0px rgba(59, 130, 246, 0.4)' },
+                            '50%': { opacity: '.7', boxShadow: '0 0 25px 8px rgba(59, 130, 246, 0.6)' },
+                        },
+                        pulseGlowGold: {
+                            '0%, 100%': { opacity: '1', boxShadow: '0 0 20px 0px rgba(251, 191, 36, 0.4)' },
+                            '50%': { opacity: '.9', boxShadow: '0 0 30px 10px rgba(251, 191, 36, 0.6)' },
+                        },
+                        drawCheck: {
+                            '0%': { strokeDasharray: '0, 100' },
+                            '100%': { strokeDasharray: '100, 100' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            background-color: #020617; /* Deep Midnight Blue */
+            color: #F8FAFC; /* Pure White */
+            /* Smooth dynamic gradient backgrounds */
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 35%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
+        }
+        
+        .glass-card {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .glass-input {
+            background: rgba(2, 6, 23, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #F8FAFC;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+        }
+        
+        /* Dropdown options styling */
+        .glass-input option {
+            background-color: #0f172a;
+            color: #F8FAFC;
+        }
+
+        /* Form Validations */
+        .glass-input:user-invalid {
+            border-color: #ef4444; 
+        }
+        .glass-input:user-valid {
+            border-color: #10b981; 
+        }
+
+        /* Micro animations */
+        .micro-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .micro-hover:hover {
+            transform: translateY(-6px);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.1), 0 0 15px rgba(59, 130, 246, 0.15);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #F8FAFC 0%, #93c5fd 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Success Modal Overlay */
+        #magic-modal {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #magic-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .modal-card {
+            transform: scale(0.95) translateY(20px);
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transition-delay: 0.1s;
+        }
+        #magic-modal.active .modal-card {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        .bg-gold-gradient {
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+        }
+
+        /* Animated Gold Checkmark */
+        .gold-check path {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+        }
+        #magic-modal.active .gold-check path {
+            animation: drawCheck 0.8s ease-out forwards 0.3s;
+        }
+        
+        #error-toast {
+            transform: translateY(150%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #error-toast.active {
+            transform: translateY(0);
+        }
+        
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen relative selection:bg-brand-500 selection:text-white pb-20 md:pb-0">
+
+    <!-- Top Navigation -->
+    <nav class="fixed w-full z-40 glass-card border-b-0 border-x-0 border-t-0 bg-opacity-80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-2.5 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-10 h-10 rounded-xl bg-brand-500/20 border border-brand-500/30 flex items-center justify-center">
+                        <i data-lucide="brain-circuit" class="w-6 h-6 text-brand-500"></i>
+                    </div>
+                    <span class="font-display font-bold text-2xl tracking-tight text-white">LogicFlow <span class="text-brand-500">AI</span></span>
+                </div>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#how-it-works" class="text-sm font-semibold text-slate-300 hover:text-white transition-colors">Advantage</a>
+                    <a href="#audit-form" class="px-5 py-2.5 rounded-lg bg-white/5 text-white font-medium hover:bg-white/10 transition backdrop-blur-sm border border-white/10 shadow-sm">Get Audit</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="pt-32 pb-16 sm:pt-40 sm:pb-24 lg:pb-32 overflow-hidden relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="lg:grid lg:grid-cols-12 lg:gap-16 items-center">
+                
+                <!-- Left Content -->
+                <div class="mb-16 lg:mb-0 lg:col-span-6 xl:col-span-7 flex flex-col justify-center text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-sm font-semibold mb-8 w-fit mx-auto lg:mx-0 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                        </span>
+                        Enterprise AI for Real Estate
+                    </div>
+                    
+                    <h1 class="text-5xl sm:text-6xl lg:text-[4.5rem] font-display font-bold leading-[1.1] mb-6 tracking-tight">
+                        Stop Chasing Leads.<br>
+                        <span class="gradient-text">Let AI Qualify Your Property Buyers 24/7.</span>
+                    </h1>
+                    
+                    <p class="text-lg sm:text-xl text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-medium">
+                        We build custom AI Agents for Real Estate Developers that automate WhatsApp, filter serious buyers from time-passers, and book site visits on autopilot.
+                    </p>
+
+                    <!-- Trust Bar -->
+                    <div class="flex flex-col sm:flex-row items-center gap-6 justify-center lg:justify-start">
+                        <div class="flex items-center -space-x-3">
+                            <img class="w-12 h-12 rounded-full border-2 border-brand-900 object-cover" src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=150" alt="Executive Developer">
+                            <img class="w-12 h-12 rounded-full border-2 border-brand-900 object-cover" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=150" alt="Broker">
+                            <img class="w-12 h-12 rounded-full border-2 border-brand-900 object-cover" src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=150" alt="Builder">
+                            <div class="w-12 h-12 rounded-full border-2 border-brand-900 bg-slate-800 flex items-center justify-center text-xs font-bold shadow-inner">+50</div>
+                        </div>
+                        <div class="text-sm text-slate-400 text-left">
+                            <span class="text-white font-semibold block text-base">Elite Real Estate Network</span>
+                            Automating 10,000+ leads daily
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Lead Generator Form -->
+                <div class="lg:col-span-6 xl:col-span-5 relative" id="audit-form">
+                    <!-- Floating Glow Effect -->
+                    <div class="absolute -inset-0.5 bg-gradient-to-br from-brand-500 to-cyan-400 rounded-2xl blur-lg opacity-25 animate-pulse-glow"></div>
+                    
+                    <div class="glass-card rounded-2xl p-8 sm:p-10 relative z-10 w-full animate-float">
+                        <div class="mb-8 flex items-start justify-between">
+                            <div>
+                                <h2 class="text-2xl sm:text-3xl font-display font-semibold text-white mb-2">Claim Your AI Audit</h2>
+                                <p class="text-sm text-slate-400 font-medium">Discover your exact conversion leaks and projected ROI.</p>
+                            </div>
+                        </div>
+
+                        <form id="lead-form" class="space-y-5">
+                            <div>
+                                <label for="name" class="block text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-2">
+                                    <i data-lucide="user" class="w-4 h-4 text-brand-400"></i> Full Name
+                                </label>
+                                <input type="text" id="name" name="name" required minlength="2" class="glass-input w-full px-4 py-3.5 rounded-lg transition-all font-medium text-white placeholder-slate-500" placeholder="e.g. James Holden">
+                            </div>
+
+                            <!-- NEW FIELD: Business Email -->
+                            <div>
+                                <label for="email" class="block text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-2">
+                                    <i data-lucide="mail" class="w-4 h-4 text-brand-400"></i> Business Email
+                                </label>
+                                <input type="email" id="email" name="email" required pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$" class="glass-input w-full px-4 py-3.5 rounded-lg transition-all font-medium text-white placeholder-slate-500" placeholder="e.g. james@builder.com">
+                            </div>
+
+                            <div>
+                                <label for="whatsapp" class="block text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-2">
+                                    <i data-lucide="phone" class="w-4 h-4 text-brand-400"></i> WhatsApp Number
+                                </label>
+                                <input type="tel" id="whatsapp" name="whatsapp" required minlength="8" class="glass-input w-full px-4 py-3.5 rounded-lg transition-all font-medium text-white placeholder-slate-500" placeholder="+1 (555) 000-0000">
+                            </div>
+
+                            <div>
+                                <label for="propertyType" class="block text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-2">
+                                    <i data-lucide="building-2" class="w-4 h-4 text-brand-400"></i> Property Sector
+                                </label>
+                                <div class="relative">
+                                    <select id="propertyType" name="propertyType" required class="glass-input w-full px-4 py-3.5 rounded-lg transition-all font-medium text-white appearance-none cursor-pointer">
+                                        <option value="" disabled selected>Select Primary Focus...</option>
+                                        <option value="Residential">Residential</option>
+                                        <option value="Commercial">Commercial</option>
+                                        <option value="Luxury Projects">Luxury Projects</option>
+                                        <option value="Plots">Plots / Land</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="monthlyLeads" class="block text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-2">
+                                    <i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-400"></i> Avg Monthly Leads
+                                </label>
+                                <input type="number" id="monthlyLeads" name="monthlyLeads" required min="1" class="glass-input w-full px-4 py-3.5 rounded-lg transition-all font-medium text-white placeholder-slate-500" placeholder="e.g. 500">
+                            </div>
+
+                            <button type="submit" id="submit-btn" class="cta-button w-full py-4 px-6 rounded-lg text-white font-bold text-lg flex justify-center items-center gap-2 mt-8 shadow-[0_10px_20px_rgba(59,130,246,0.3)] hover:shadow-[0_15px_30px_rgba(59,130,246,0.5)] transition-all relative">
+                                <span id="btn-text">Get My Free AI Audit <i data-lucide="arrow-up-right" class="inline-block w-5 h-5 ml-1"></i></span>
+                                <span id="icon-spin" class="hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"><i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- The LogicFlow Advantage Section -->
+    <section id="how-it-works" class="py-24 relative border-t border-white/5 bg-slate-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16 lg:mb-20">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-display font-bold text-white mb-6">The LogicFlow Advantage</h2>
+                <p class="text-slate-400 text-lg sm:text-xl max-w-3xl mx-auto font-medium">Traditional follow-ups are dead. Implement a frictionless pipeline that practically reads buyer intent and converts 24/7.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Highlight Card 1 -->
+                <div class="glass-card p-10 rounded-2xl micro-hover group">
+                    <div class="w-16 h-16 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-brand-500/20 group-hover:border-brand-500/40 transition-all duration-300 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+                        <i data-lucide="zap" class="w-8 h-8 text-brand-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]"></i>
+                    </div>
+                    <h3 class="text-2xl font-display font-bold text-white mb-4">Instant Response</h3>
+                    <p class="text-slate-400 text-base leading-relaxed font-medium">AI replies to every inquiry on WhatsApp or Web within <span class="text-white font-bold">3 seconds</span>, completely eliminating lead decay and capitalizing on high-intent moments.</p>
+                </div>
+
+                <!-- Highlight Card 2 -->
+                <div class="glass-card p-10 rounded-2xl micro-hover group">
+                    <div class="w-16 h-16 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-brand-500/20 group-hover:border-brand-500/40 transition-all duration-300 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+                        <i data-lucide="brain-circuit" class="w-8 h-8 text-brand-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]"></i>
+                    </div>
+                    <h3 class="text-2xl font-display font-bold text-white mb-4">Smart Qualification</h3>
+                    <p class="text-slate-400 text-base leading-relaxed font-medium">AI intuitively asks about budget, property type, and intent naturally <span class="text-white font-bold">before you see the lead</span>. Stop your brokers from wasting time touring unqualified prospects.</p>
+                </div>
+
+                <!-- Highlight Card 3 -->
+                <div class="glass-card p-10 rounded-2xl micro-hover group relative overflow-hidden">
+                    <div class="absolute -right-6 -top-6 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl group-hover:bg-brand-500/20 transition-all"></div>
+                    <div class="relative">
+                        <div class="w-16 h-16 rounded-2xl bg-brand-500/10 border border-brand-500/20 flex items-center justify-center mb-8 group-hover:scale-110 group-hover:bg-brand-500/20 group-hover:border-brand-500/40 transition-all duration-300 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
+                            <i data-lucide="calendar-check-2" class="w-8 h-8 text-brand-400 drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]"></i>
+                        </div>
+                        <h3 class="text-2xl font-display font-bold text-white mb-4">Autopilot Booking</h3>
+                        <p class="text-slate-400 text-base leading-relaxed font-medium">Syncs directly to your sales team's Google Calendar. The AI autonomously navigates basic objections and scheduling logistics to lock in property site visits.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Global Footer -->
+    <footer class="border-t border-white/5 py-12 relative z-10 bg-[#00020a]">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
+                <i data-lucide="brain-circuit" class="w-6 h-6 text-brand-500"></i>
+                <span class="font-display font-bold text-lg text-slate-300">LogicFlow AI</span>
+            </div>
+            
+            <!-- Global Brand Presence updated -->
+            <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs font-semibold uppercase tracking-widest text-slate-500">
+                <span>Ranchi</span>
+                <span>Dubai</span>
+                <span>London</span>
+                <span>New York</span>
+            </div>
+
+            <div class="text-slate-600 text-sm font-medium">
+                © 2026 LogicFlow AI.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Sticky Bottom CTA -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 p-4 border-t border-white/10 glass-card z-30 bg-[#020617]/90">
+        <a href="#audit-form" class="cta-button block w-full py-4 px-4 rounded-xl text-white font-bold text-center text-[15px] shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+            Get My Free AI Audit
+        </a>
+    </div>
+
+    <!-- THE "MAGIC" SUCCESS MODAL (Upgraded Logic & Gold UI) -->
+    <div id="magic-modal" class="fixed inset-0 z-[100] bg-brand-900/90 backdrop-blur-xl items-center justify-center p-4 overflow-y-auto">
+        <div class="modal-card relative max-w-2xl w-full mx-auto my-8">
+            <!-- Modal Background Glow -->
+            <div class="absolute -inset-1 bg-gradient-to-br from-brand-gold to-yellow-600 rounded-3xl blur-2xl opacity-20"></div>
+            
+            <div class="glass-card bg-[#050b1a]/95 rounded-3xl p-8 md:p-14 relative z-10 border border-brand-gold/20 shadow-2xl overflow-hidden text-center">
+                <!-- Top Badge/Icon -->
+                <div class="mx-auto w-28 h-28 mb-8 relative">
+                    <div class="absolute inset-0 bg-brand-gold/10 rounded-full animate-pulse-glow-gold"></div>
+                    <div class="relative w-full h-full rounded-full border border-brand-gold/30 flex items-center justify-center bg-[#0a1128]">
+                        <!-- SVG Checkmark Animated via CSS -->
+                        <svg class="gold-check w-14 h-14 text-brand-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Dynamic Modal Content -->
+                <h3 class="text-3xl md:text-4xl font-display font-bold text-white mb-6 leading-tight">
+                    Welcome to the Future of Real Estate Automation, <span id="modal-dyn-name" class="text-brand-gold"></span>!
+                </h3>
+                
+                <p class="text-slate-300 text-lg md:text-xl mb-10 font-medium leading-relaxed max-w-xl mx-auto">
+                    Your personalized AI strategy is being generated. We have sent a Welcome Package to <span id="modal-dyn-email" class="text-white font-bold border-b border-brand-gold/40"></span>.
+                </p>
+
+                <!-- High-Visibility Pulsing WhatsApp CTA -->
+                <div class="mb-4">
+                    <a id="modal-wa-link" href="#" target="_blank" class="inline-flex items-center justify-center gap-3 w-full md:w-auto px-8 py-5 rounded-2xl bg-gold-gradient text-brand-900 font-extrabold text-lg md:text-xl shadow-[0_10px_35px_rgba(251,191,36,0.4)] hover:shadow-[0_15px_45px_rgba(251,191,36,0.6)] hover:-translate-y-1 transition-all duration-300 animate-pulse-glow-gold relative overflow-hidden group">
+                        <i data-lucide="message-circle" class="w-6 h-6"></i>
+                        Activate Instant Consultation
+                        <!-- Shine effect -->
+                        <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                    </a>
+                </div>
+                
+                <button onclick="closeModal()" class="mt-6 text-sm font-semibold text-slate-500 hover:text-white transition-colors">
+                    Close dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webhook Event: Error Toast -->
+    <div id="error-toast" class="fixed bottom-24 md:bottom-12 left-1/2 -translate-x-1/2 z-[100] glass-card border border-red-500/30 bg-red-950/90 text-red-200 px-6 py-4 rounded-xl shadow-[0_10px_30px_rgba(239,68,68,0.2)] flex items-center gap-4 w-[90%] md:w-auto max-w-md">
+        <i data-lucide="alert-triangle" class="w-6 h-6 text-red-400 shrink-0"></i>
+        <span class="text-[15px] font-medium leading-snug">Connection failed. Please check your network and try again.</span>
+        <button onclick="closeError()" class="ml-auto p-1 text-red-400 hover:text-red-300 transition-colors bg-red-500/10 rounded-md">
+            <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+    </div>
+
+    <!-- Core Logic & Interactivity -->
+    <script>
+        // 1. Initialize Icons
+        lucide.createIcons();
+
+        // 2. DOM Elements
+        const form = document.getElementById('lead-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const iconSpin = document.getElementById('icon-spin');
+        
+        const magicModal = document.getElementById('magic-modal');
+        const dynName = document.getElementById('modal-dyn-name');
+        const dynEmail = document.getElementById('modal-dyn-email');
+        const waLink = document.getElementById('modal-wa-link');
+        const errorToast = document.getElementById('error-toast');
+
+        // 3. Webhook Logic
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Set UI Loading State
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-80', 'cursor-not-allowed');
+            btnText.classList.add('opacity-0');
+            iconSpin.classList.remove('hidden');
+
+            // Gather Data
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                // Execute Webhook POST Hook
+                const response = await fetch('https://styleflow.app.n8n.cloud/webhook/logicflow-leads', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showMagicModal(data);
+                    form.reset(); // Clear form on success
+                } else {
+                    showError();
+                }
+            } catch (error) {
+                console.error('Webhook Connection Error:', error);
+                showError();
+            } finally {
+                // Restore UI State
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+                btnText.classList.remove('opacity-0');
+                iconSpin.classList.add('hidden');
+            }
+        });
+
+        // 4. Modal and Notification Handlers
+        function showMagicModal(data) {
+            // Populate dynamic fields
+            const firstName = data.name.trim().split(' ')[0];
+            dynName.textContent = firstName || 'there';
+            dynEmail.textContent = data.email || 'your email';
+
+            // Construct Dynamic WhatsApp Payload
+            // Using placeholder number - USER MUST REPLACE!
+            const waNumber = '918709909162'; 
+            const propType = encodeURIComponent(data.propertyType || "property");
+            const nameEncoded = encodeURIComponent(firstName);
+            
+            const waText = `Hi LogicFlow AI, I just signed up for the Global Audit. My name is ${nameEncoded}.`;
+            waLink.href = `https://wa.me/${waNumber}?text=${waText}`;
+
+            // Reveal modal
+            magicModal.style.display = 'flex';
+            void magicModal.offsetWidth; // Force reflow
+            magicModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            magicModal.classList.remove('active');
+            setTimeout(() => {
+                magicModal.style.display = 'none';
+                document.body.style.overflow = '';
+            }, 600);
+        }
+
+        let errorTimeout;
+        function showError() {
+            errorToast.classList.add('active');
+            clearTimeout(errorTimeout);
+            errorTimeout = setTimeout(() => {
+                closeError();
+            }, 6000);
+        }
+
+        function closeError() {
+            errorToast.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
